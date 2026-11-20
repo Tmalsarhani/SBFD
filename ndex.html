@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تحليل اختبار SBFD R1 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f5f7f8;--card:#fff;--tx:#14262b;--mut:#64767b;--bd:#dfe6e8;--r1:#0f766e;--r2:#d97706;--r3:#4f46e5;--good:#15803d;--bad:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a1d;--card:#17262a;--tx:#e8f0f1;--mut:#94a8ad;--bd:#2a3d42;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1a1d;--card:#17262a;--tx:#e8f0f1;--mut:#94a8ad;--bd:#2a3d42;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#f87171;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0 0 2px}h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.g{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut);font-size:13px}
+button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 14px;border-radius:9px;cursor:pointer}
+button.on{background:var(--tx);color:var(--bg)}
+textarea{width:100%;min-height:70px;font:12px monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px;direction:ltr}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.cv{position:relative;height:300px}
+.ov{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:right}
+.bar{height:8px;border-radius:4px;background:var(--bd);overflow:hidden;margin:3px 0 9px}.bar i{display:block;height:100%}
+.it{font-size:13px}.it div{display:flex;justify-content:space-between}
+.good{color:var(--good)}.bad{color:var(--bad)}small{color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>نتائج اختبار SBFD ‏R1 ‏2026 (عينة)</h1>
+<div class="sub">⚠️ نتائج تجريبية (بيانات وهمية) — عينة لشكل التقرير</div>
+
+<div id="out">
+<div class="g g4" id="kp"></div>
+<div class="row" id="tb"></div>
+<div id="v0">
+<div class="card"><h2>الأداء حسب الموضوع</h2><div class="cv"><canvas id="c1"></canvas></div></div>
+<div class="g g2">
+<div class="card"><h2>الأداء حسب الطبيب</h2><div class="cv"><canvas id="c2"></canvas></div></div>
+<div class="card"><h2>خريطة المواضيع الفرعية</h2><div class="cv"><canvas id="c3"></canvas></div></div>
+</div>
+<div class="card"><h2>المقارنة التفصيلية (٪ إجابات صحيحة)</h2><div class="ov" id="hm"></div></div>
+
+</div><div id="v1"><div class="card"><h2>تحليل المستوى</h2><div class="row" id="lv"></div>
+<div class="g g2" style="margin-bottom:14px"><div class="cv"><canvas id="c4"></canvas></div><div class="cv"><canvas id="c5"></canvas></div></div>
+<div class="g g2"><div><h2 class="good">نقاط القوة</h2><div id="st" class="it"></div></div>
+<div><h2 class="bad">نقاط الضعف</h2><div id="wk" class="it"></div></div></div></div>
+
+<div class="g g2">
+<div class="card"><h2>أكثر الأسئلة خطأً في المستوى</h2><div class="ov" id="qs"></div></div>
+<div class="card"><h2>الطلاب في المستوى</h2><div class="ov" id="sd"></div></div>
+</div>
+</div>
+<div id="v2"><div class="card"><h2>تحليل الطالب</h2><div class="row" id="lv2"></div><div class="row"><select id="ss" onchange="si=+this.value;stu()" style="font:inherit;padding:7px;border-radius:9px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);min-width:220px"></select></div></div>
+<div class="g g4" id="sk"></div>
+<div class="g g2"><div class="card"><h2>الأداء حسب الموضوع</h2><div class="cv"><canvas id="c6"></canvas></div></div><div class="card"><h2>المواضيع الفرعية</h2><div class="cv"><canvas id="c7"></canvas></div></div></div>
+<div class="g g2"><div class="card"><h2 class="good">نقاط القوة</h2><div id="ss1" class="it"></div></div><div class="card"><h2 class="bad">نقاط الضعف</h2><div id="ss2" class="it"></div></div></div>
+<div class="card"><h2>الأسئلة الخاطئة</h2><div class="ov" id="smq"></div></div></div>
+</div>
+</div>
+
+<script>
+const KEY="1".repeat(95);
+const D=[{"n": "احمد الخالدي", "l": "R1", "b": "00110110011100100001111111110101011000011110000001100001001100011110101101011110010110010110111"}, {"n": "محمد العتيبي", "l": "R1", "b": "01011000011001100100011101010011011000101100110010000001110001000001000000010001000010010000000"}, {"n": "عائشة", "l": "R1", "b": "01010110100111011000010110001011100001111100000001101000011010111000000011111011101001001001000"}, {"n": "علي الخثعمي", "l": "R2", "b": "10001110010100010100111101101011011100001011110110111001000010001001001011100111100111101011101"}, {"n": "ماجد الزهراني", "l": "R2", "b": "11011111111111110000100011010011011010110110001101011110001110001100011111100110111110000111100"}, {"n": "الجريسي", "l": "R3", "b": "01001001001111111111011111101100111111111101101010110101111110111111110111110100100101101101100"}, {"n": "الخالدي", "l": "R3", "b": "11111111111111100111011111111111000111111111111111110111111111110111011101111010110111111111111"}];
+const SECS=[["Bonding Generations",1,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation & Obturation",56,85],["Articulators & Face-bow",86,95]];
+const DOCS=[["د. طارق",1,20],["د. محمد",21,40],["د. أسامة الحازمي",41,85],["د. ياسمين",86,95]];
+const SUBS=[["Bonding: Identify the System",1,6],["Bonding: Clinical Steps",7,12],["Bonding: Pros & Cons",13,16],["Bonding: Indications",17,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation",56,70],["Obturation",71,85],["Articulators & Face-bow",86,95]];
+const LC={R1:"--r1",R2:"--r2",R3:"--r3"};
+let S=[],cur="R1",ch={};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const pc=(l,a,b)=>{let c=0,n=0;for(const s of l)for(let q=a;q<=b;q++){n++;if(s.ans[q-1]===KEY[q-1])c++}return n?c/n*100:null};
+const f1=x=>x==null?"–":x.toFixed(1)+"٪";
+const lv=()=>["R1","R2","R3"].filter(k=>S.some(s=>s.level===k));
+const by=k=>S.filter(s=>s.level===k);
+function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
+function ds(l,items,r){return lv().map(k=>({label:k,data:items.map(x=>pc(by(k),x[1],x[2])),backgroundColor:css(LC[k])+(r?"33":""),borderColor:css(LC[k]),borderWidth:r?2:0,borderRadius:5}))}
+function ready(){if(!lv().includes(cur))cur=lv()[0];tab=0;show();0}
+function ovw(){
+ kp.innerHTML=`<div class="card kpi"><b>${S.length}</b><span>عدد الطلاب</span></div><div class="card kpi"><b>${f1(pc(S,1,95))}</b><span>المتوسط العام</span></div>`+lv().map(k=>`<div class="card kpi"><b style="color:var(${LC[k]})">${f1(pc(by(k),1,95))}</b><span>${k} · ${by(k).length} طالب</span></div>`).join("");
+ const bo={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
+ mk("c1",{type:"bar",data:{labels:SECS.map(x=>x[0]),datasets:ds(0,SECS)},options:bo});
+ mk("c2",{type:"bar",data:{labels:DOCS.map(x=>x[0]),datasets:ds(0,DOCS)},options:bo});
+ mk("c3",{type:"radar",data:{labels:SUBS.map(x=>x[0]),datasets:ds(0,SUBS,1)},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false}}}}});
+ const rowsT=[...SECS.map(x=>[x[0],x[1],x[2],1]),...SUBS.map(x=>[x[0],x[1],x[2],0]),...DOCS.map(x=>["👤 "+x[0],x[1],x[2],1])];
+ const col=v=>v==null?"":`background:color-mix(in srgb,${v>=70?"var(--good)":v>=50?"var(--r2)":"var(--bad)"} 28%,transparent)`;
+ hm.innerHTML="<table><tr><th></th>"+lv().map(k=>`<th>${k}</th>`).join("")+"<th>الكل</th></tr>"+rowsT.map(r=>`<tr><td>${r[3]?"<b>"+r[0]+"</b>":r[0]}</td>`+lv().concat([0]).map(k=>{const v=pc(k?by(k):S,r[1],r[2]);return`<td style="${col(v)}">${f1(v)}</td>`}).join("")+"</tr>").join("")+"</table>";
+}
+function lv_(){
+ lvc();const bx=document.getElementById("lv");bx.innerHTML=lv().map(k=>`<button class="${k===cur?"on":""}" onclick="cur='${k}';lv_()">${k}</button>`).join("");
+ const L1=by(cur),all=SUBS.map(x=>({n:x[0],v:pc(L1,x[1],x[2]),o:pc(S,x[1],x[2])})).sort((a,b)=>b.v-a.v);
+ const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>المتوسط العام ${f1(x.o)}</small><br>`;
+ st.innerHTML=all.slice(0,3).map(it).join("");wk.innerHTML=all.slice(-3).reverse().map(it).join("");
+ const qa=[];for(let q=1;q<=95;q++){const c={};let ok=0;L1.forEach(s=>{if(s.ans[q-1]===KEY[q-1])ok++;else c[s.ans[q-1]||"–"]=(c[s.ans[q-1]||"–"]||0)+1});const w=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];qa.push({q,v:ok/L1.length*100,w:w?w[0]:"–"})}
+ qs.innerHTML="<table><tr><th>السؤال</th><th>الموضوع</th><th>صحيح</th></tr>"+qa.sort((a,b)=>a.v-b.v).slice(0,10).map(x=>`<tr><td>Q${x.q}</td><td>${SECS.find(s=>x.q>=s[1]&&x.q<=s[2])[0]}</td><td class="bad">${f1(x.v)}</td></tr>`).join("")+"</table>";
+ sd.innerHTML="<table><tr><th>الطالب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w])=>`<tr><td>${s.name}</td><td>${f1(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
+}
+let tab=0,si=0;
+const BO={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
+function show(){
+ tb.innerHTML=["نظرة عامة","كل مستوى","كل طالب"].map((x,i)=>`<button class="${i===tab?"on":""}" onclick="tab=${i};show()">${x}</button>`).join("");
+ v0.style.display=tab===0?"":"none";v1.style.display=tab===1?"":"none";v2.style.display=tab===2?"":"none";
+ if(tab===0)ovw();else if(tab===1)lv_();else stu()}
+function lvc(){const L1=by(cur);
+ mk("c4",{type:"bar",data:{labels:SECS.map(x=>x[0]),datasets:[{label:cur,data:SECS.map(x=>pc(L1,x[1],x[2])),backgroundColor:css(LC[cur]),borderRadius:5},{label:"الكل",data:SECS.map(x=>pc(S,x[1],x[2])),backgroundColor:css("--bd"),borderRadius:5}]},options:BO});
+ const o=L1.map(s=>[s.name,pc([s],1,95)]).sort((a,b)=>b[1]-a[1]);
+ mk("c5",{type:"bar",data:{labels:o.map(x=>x[0]),datasets:[{label:"الدرجة",data:o.map(x=>x[1]),backgroundColor:css(LC[cur]),borderRadius:5}]},options:{...BO,plugins:{legend:{display:false}}}})}
+function stu(){
+ const ls=lv();if(!ls.includes(cur))cur=ls[0];
+ document.getElementById("lv2").innerHTML=ls.map(k=>`<button class="${k===cur?"on":""}" onclick="cur='${k}';si=0;stu()">${k}</button>`).join("");
+ const L1=by(cur);if(si>=L1.length)si=0;
+ ss.innerHTML=L1.map((s,i)=>`<option value="${i}" ${i===si?"selected":""}>${s.name}</option>`).join("");
+ const s=L1[si],T=pc([s],1,95),A=pc(L1,1,95),rk=L1.filter(x=>pc([x],1,95)>T).length+1,wr=[];
+ for(let q=1;q<=95;q++)if(s.ans[q-1]!==KEY[q-1])wr.push(q);
+ sk.innerHTML=`<div class="card kpi"><b style="color:var(${LC[cur]})">${f1(T)}</b><span>الدرجة</span></div><div class="card kpi"><b>${rk}/${L1.length}</b><span>الترتيب في ${cur}</span></div><div class="card kpi"><b>${f1(A)}</b><span>متوسط المستوى</span></div><div class="card kpi"><b>${95-wr.length}/95</b><span>إجابات صحيحة</span></div>`;
+ const two=(a,r)=>[{label:s.name,data:a.map(x=>pc([s],x[1],x[2])),backgroundColor:css(LC[cur])+(r?"44":""),borderColor:css(LC[cur]),borderWidth:r?2:0,borderRadius:5},{label:"متوسط "+cur,data:a.map(x=>pc(L1,x[1],x[2])),backgroundColor:css("--mut")+(r?"22":""),borderColor:css("--mut"),borderWidth:r?2:0,borderRadius:5}];
+ mk("c6",{type:"bar",data:{labels:SECS.map(x=>x[0]),datasets:two(SECS,0)},options:BO});
+ mk("c7",{type:"radar",data:{labels:SUBS.map(x=>x[0]),datasets:two(SUBS,1)},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false}}}}});
+ const sb=SUBS.map(x=>({n:x[0],v:pc([s],x[1],x[2]),o:pc(L1,x[1],x[2])})).sort((a,b)=>b.v-a.v);
+ const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>متوسط المستوى ${f1(x.o)}</small><br>`;
+ ss1.innerHTML=sb.slice(0,3).map(it).join("");ss2.innerHTML=sb.slice(-3).reverse().map(it).join("");
+ smq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
+S=D.map(x=>({name:x.n,level:x.l,ans:x.b}));ready();
+</script>
+</body>
+</html>
