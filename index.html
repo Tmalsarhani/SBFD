@@ -7,33 +7,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f5f7f8;--card:#fff;--tx:#14262b;--mut:#64767b;--bd:#dfe6e8;--r1:#0f766e;--r2:#d97706;--r3:#4f46e5;--good:#15803d;--bad:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a1d;--card:#17262a;--tx:#e8f0f1;--mut:#94a8ad;--bd:#2a3d42;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#f87171;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0f1a1d;--card:#17262a;--tx:#e8f0f1;--mut:#94a8ad;--bd:#2a3d42;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#f87171;color-scheme:dark}
+:root{--bg:#f2f6f9;--card:#fff;--tx:#0f2a3d;--mut:#6b8195;--bd:#e2e9ef;--pri:#0b5c73;--r1:#0d9488;--r2:#f59e0b;--r3:#6366f1;--good:#16a34a;--bad:#e11d48;--sh:0 1px 2px rgba(15,42,61,.05),0 8px 24px rgba(15,42,61,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1720;--card:#12232f;--tx:#e6eef4;--mut:#8fa5b6;--bd:#223645;--pri:#0e7490;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#fb7185;--sh:none;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1720;--card:#12232f;--tx:#e6eef4;--mut:#8fa5b6;--bd:#223645;--pri:#0e7490;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#fb7185;--sh:none;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;line-height:1.6}
-.w{max-width:1100px;margin:0 auto;padding:16px}
-h1{font-size:22px;margin:0 0 2px}h2{font-size:16px;margin:0 0 10px}
-.sub{color:var(--mut);font-size:13px;margin-bottom:14px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
-.g{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
-.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut);font-size:13px}
-button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 14px;border-radius:9px;cursor:pointer}
-button.on{background:var(--tx);color:var(--bg)}
-textarea{width:100%;min-height:70px;font:12px monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px;direction:ltr}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Tajawal","Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;line-height:1.65}
+.w{max-width:1100px;margin:0 auto;padding:14px}
+.hero{background:linear-gradient(135deg,var(--pri),var(--r1));color:#fff;border-radius:20px;padding:22px 20px;margin-bottom:14px;box-shadow:var(--sh)}
+.hero h1{font-size:23px;margin:0 0 4px;color:#fff}.hero .sub{color:#d6f3ef;margin:0;font-size:13px}
+h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--pri)}h2.good::before{background:var(--good)}h2.bad::before{background:var(--bad)}
+.sub{color:var(--mut);font-size:13px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.g{display:grid;gap:14px}.g .card{margin-bottom:0}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-bottom:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px}
+.kpi{border-top:4px solid var(--pri)}.kpi b{display:block;font-size:28px;line-height:1.3}.kpi span{color:var(--mut);font-size:13px}
+.g4>.kpi:nth-child(3){border-top-color:var(--r1)}.g4>.kpi:nth-child(4){border-top-color:var(--r2)}.g4>.kpi:nth-child(5){border-top-color:var(--r3)}
+button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 16px;border-radius:10px;cursor:pointer;font-weight:500}
+button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+#tb{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:4px;display:flex;gap:4px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:5;box-shadow:var(--sh);margin:0 0 14px}
+#tb button{flex:1;border:0;background:transparent;font-weight:700;color:var(--mut);padding:9px 4px}#tb button.on{background:var(--pri);color:#fff}
+textarea{width:100%;min-height:70px;font:12px monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px;direction:ltr}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
-.cv{position:relative;height:300px}
-.ov{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:right}
-.bar{height:8px;border-radius:4px;background:var(--bd);overflow:hidden;margin:3px 0 9px}.bar i{display:block;height:100%}
+.cv{position:relative;height:300px}.ov{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:center;white-space:nowrap}th{background:var(--bg);color:var(--mut);font-size:12px;font-weight:700}th:first-child,td:first-child{text-align:right}
+tr:last-child td{border-bottom:0}
+.bar{height:10px;border-radius:5px;background:var(--bd);overflow:hidden;margin:4px 0 6px}.bar i{display:block;height:100%;border-radius:5px}
 .it{font-size:13px}.it div{display:flex;justify-content:space-between}
 .good{color:var(--good)}.bad{color:var(--bad)}small{color:var(--mut)}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="w">
-<h1>نتائج اختبار SBFD ‏R1 ‏2026 (عينة)</h1>
-<div class="sub">⚠️ نتائج تجريبية (بيانات وهمية) — عينة لشكل التقرير</div>
+<header class="hero"><h1>نتائج اختبار SBFD ‏R1 ‏2026 (عينة)</h1><div class="sub">⚠️ نتائج تجريبية (بيانات وهمية) — عينة لشكل التقرير</div></header>
 
 <div id="out">
 <div class="g g4" id="kp"></div>
@@ -66,7 +73,6 @@ th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:center;white-
 
 <script>
 const KEY="1".repeat(95);
-const D=[{"n": "احمد الخالدي", "l": "R1", "b": "00110110011100100001111111110101011000011110000001100001001100011110101101011110010110010110111"}, {"n": "محمد العتيبي", "l": "R1", "b": "01011000011001100100011101010011011000101100110010000001110001000001000000010001000010010000000"}, {"n": "عائشة", "l": "R1", "b": "01010110100111011000010110001011100001111100000001101000011010111000000011111011101001001001000"}, {"n": "علي الخثعمي", "l": "R2", "b": "10001110010100010100111101101011011100001011110110111001000010001001001011100111100111101011101"}, {"n": "ماجد الزهراني", "l": "R2", "b": "11011111111111110000100011010011011010110110001101011110001110001100011111100110111110000111100"}, {"n": "الجريسي", "l": "R3", "b": "01001001001111111111011111101100111111111101101010110101111110111111110111110100100101101101100"}, {"n": "الخالدي", "l": "R3", "b": "11111111111111100111011111111111000111111111111111110111111111110111011101111010110111111111111"}];
 const SECS=[["Bonding Generations",1,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation & Obturation",56,85],["Articulators & Face-bow",86,95]];
 const DOCS=[["د. طارق",1,20],["د. محمد",21,40],["د. أسامة الحازمي",41,85],["د. ياسمين",86,95]];
 const SUBS=[["Bonding: Identify the System",1,6],["Bonding: Clinical Steps",7,12],["Bonding: Pros & Cons",13,16],["Bonding: Indications",17,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation",56,70],["Obturation",71,85],["Articulators & Face-bow",86,95]];
@@ -77,7 +83,7 @@ const pc=(l,a,b)=>{let c=0,n=0;for(const s of l)for(let q=a;q<=b;q++){n++;if(s.a
 const f1=x=>x==null?"–":x.toFixed(1)+"٪";
 const lv=()=>["R1","R2","R3"].filter(k=>S.some(s=>s.level===k));
 const by=k=>S.filter(s=>s.level===k);
-function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
+function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.font.family="Tajawal,Tahoma,sans-serif";Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
 function ds(l,items,r){return lv().map(k=>({label:k,data:items.map(x=>pc(by(k),x[1],x[2])),backgroundColor:css(LC[k])+(r?"33":""),borderColor:css(LC[k]),borderWidth:r?2:0,borderRadius:5}))}
 function ready(){if(!lv().includes(cur))cur=lv()[0];tab=0;show();0}
 function ovw(){
@@ -124,7 +130,7 @@ function stu(){
  const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>متوسط المستوى ${f1(x.o)}</small><br>`;
  ss1.innerHTML=sb.slice(0,3).map(it).join("");ss2.innerHTML=sb.slice(-3).reverse().map(it).join("");
  smq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
-S=D.map(x=>({name:x.n,level:x.l,ans:x.b}));ready();
+fetch("data.json?v="+Date.now()).then(r=>r.json()).then(D=>{S=D.map(x=>({name:x.n,level:x.l,ans:x.b}));ready()}).catch(()=>{out.innerHTML='<div class="card">لا توجد نتائج منشورة بعد.</div>'});
 </script>
 </body>
 </html>
