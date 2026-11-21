@@ -40,9 +40,23 @@ tr:last-child td{border-bottom:0}
 </head>
 <body>
 <div class="w">
-<header class="hero"><h1>نتائج اختبار SBFD ‏R1 ‏2026 (عينة)</h1><div class="sub">⚠️ نتائج تجريبية (بيانات وهمية) — عينة لشكل التقرير</div></header>
+<header class="hero"><h1>تحليل نتائج اختبار SBFD ‏R1 ‏2026</h1><div class="sub">تحليل حسب المستوى والموضوع والطبيب — 95 سؤالاً</div></header>
 
-<div id="out">
+<div class="card" id="adm">
+<h2>إدخال الإجابات</h2>
+<div class="sub">⚠️ يجب أن يحتوي الملف على عمود <b>Key</b> (الإجابات الصحيحة) — المفتاح لا يُحفظ في الصفحة. يدعم قالبين: عمودي (عمود لكل طالب) أو أفقي. الأفقي: صف لكل طالب: عمود <b>Level</b> (R1/R2/R3)، عمود <b>Name</b> (اختياري)، ثم أعمدة <b>Q1</b> … <b>Q95</b> بحروف A–D. الأعمدة الفارغة تُحسب خطأ.</div>
+<div class="row">
+<input type="file" id="f" accept=".xlsx,.xls,.csv" style="display:none">
+<button onclick="f.click()">رفع ملف Excel / CSV</button>
+<button onclick="demo()">بيانات تجريبية</button>
+<button onclick="cpl()">نسخ رأس القالب</button>
+<span id="msg" class="sub"></span></div>
+<textarea id="ta" placeholder="أو الصق هنا من Excel (مع الصف الأول للعناوين) ثم اضغط تحليل"></textarea>
+<div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 إنشاء رابط المشاركة</button></div>
+<textarea id="oj" readonly placeholder="بعد التحليل اضغط «إنشاء رابط المشاركة» ليظهر الرابط هنا" style="min-height:50px"></textarea>
+</div>
+
+<div id="out" style="display:none">
 <div class="g g4" id="kp"></div>
 <div class="row" id="tb"></div>
 <div id="v0">
@@ -72,7 +86,7 @@ tr:last-child td{border-bottom:0}
 </div>
 
 <script>
-const KEY="1".repeat(95);
+let KEY="";
 const SECS=[["Bonding Generations",1,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation & Obturation",56,85],["Articulators & Face-bow",86,95]];
 const DOCS=[["د. طارق",1,20],["د. محمد",21,40],["د. أسامة الحازمي",41,85],["د. ياسمين",86,95]];
 const SUBS=[["Bonding: Identify the System",1,6],["Bonding: Clinical Steps",7,12],["Bonding: Pros & Cons",13,16],["Bonding: Indications",17,20],["Minimal Invasive Dentistry",21,40],["Rotary File Types",41,55],["Instrumentation",56,70],["Obturation",71,85],["Articulators & Face-bow",86,95]];
@@ -83,9 +97,32 @@ const pc=(l,a,b)=>{let c=0,n=0;for(const s of l)for(let q=a;q<=b;q++){n++;if(s.a
 const f1=x=>x==null?"–":x.toFixed(1)+"٪";
 const lv=()=>["R1","R2","R3"].filter(k=>S.some(s=>s.level===k));
 const by=k=>S.filter(s=>s.level===k);
+function cpl(){const h="Name\tLevel\t"+Array.from({length:95},(_,i)=>"Q"+(i+1)).join("\t");try{navigator.clipboard.writeText(h);msg.textContent="تم نسخ رأس القالب — الصقه في Excel"}catch(e){ta.value=h;msg.textContent="الرأس في المربع — انسخه إلى Excel"}}
+const L={"أ":"A","ا":"A","ب":"B","ج":"C","د":"D"};
+function T(rows){if(!rows[1]||!/^(q|#|سؤال)/i.test(String(rows[0][0]||"").trim())||!/level|مستوى/i.test(String(rows[1][0]||"")))return rows;
+ const o=[["Name","Level"]];for(let q=1;q<=95;q++)o[0].push("Q"+q);
+ for(let c=2;c<rows[0].length;c++){if(!rows[0][c])continue;const r=[rows[0][c],rows[1][c]];for(let q=1;q<=95;q++){const w=rows.find(x=>+x[0]===q);r.push(w&&w[c]!=null?w[c]:"")}o.push(r)}return o}
+function parse(rows){
+ rows=T(rows);const h=rows[0].map(x=>String(x||"").trim());
+ let li=h.findIndex(x=>/level|مستوى|المستوى/i.test(x)),ni=h.findIndex(x=>/name|اسم|الاسم|id|رقم/i.test(x)),qi={};
+ h.forEach((x,i)=>{const m=x.match(/^\D{0,2}(\d{1,2})$/);if(m&&+m[1]>=1&&+m[1]<=95&&i!==li)qi[+m[1]]=i});
+ if(li<0||Object.keys(qi).length<10)throw new Error("لم أجد عمود Level أو أعمدة الأسئلة");
+ const kr=rows.slice(1).find(r=>/^(key|مفتاح|المفتاح)$/i.test(String(r[ni>=0?ni:0]||"").trim()));
+ if(!kr)throw new Error("لم أجد عمود المفتاح Key في الملف");
+ KEY=Array.from({length:95},(_,i)=>{const v=String(kr[qi[i+1]]==null?"":kr[qi[i+1]]).trim().toUpperCase()[0]||"";return L[v]||v}).join("");
+ const out=[];
+ rows.slice(1).forEach((r,k)=>{if(!r||!r.length)return;const m=String(r[li]||"").match(/[123]/);if(!m)return;
+  const ans=[];for(let q=1;q<=95;q++){let v=qi[q]==null?"":String(r[qi[q]]==null?"":r[qi[q]]).trim().toUpperCase()[0]||"";ans.push(L[v]||v)}
+  out.push({name:ni>=0&&r[ni]?String(r[ni]):"طالب "+(k+1),level:"R"+m[0],ans})});
+ if(!out.length)throw new Error("لا توجد صفوف صالحة");return out}
+function go(t){try{const d=t.includes("\t")?"\t":",";S=parse(t.trim().split(/\r?\n/).map(l=>l.split(d)));ready()}catch(e){msg.textContent="خطأ: "+e.message}}
+f.onchange=e=>{const fl=e.target.files[0];if(!fl)return;const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:"array"});S=parse(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""}));ready()}catch(x){msg.textContent="خطأ: "+x.message}};r.readAsArrayBuffer(fl)};
+function demo(){let s=7;KEY=Array.from({length:95},(_,i)=>"ABCD"[(i*7+3)%4]).join("");const R=()=>(s=(s*16807)%2147483647)/2147483647;const base={R1:.55,R2:.68,R3:.8},wk={R1:[5,6,3],R2:[3,6],R3:[7]};S=[];
+ const NM={R1:["احمد الخالدي","محمد العتيبي","عائشة"],R2:["علي الخثعمي","ماجد الزهراني"],R3:["الجريسي","الخالدي"]};["R1","R2","R3"].forEach(l=>{NM[l].forEach((nm,i)=>{const ab=base[l]+(R()-.5)*.2,ans=[];for(let q=1;q<=95;q++){let p=ab;const si=SUBS.findIndex(x=>q>=x[1]&&q<=x[2]);if((wk[l]||[]).includes(si))p-=.25;if(q>=86)p-=l==="R1"?.1:0;
+ if(R()<p)ans.push(KEY[q-1]);else{const o="ABCD".replace(KEY[q-1],"");ans.push(o[Math.floor(R()*3)])}}S.push({name:nm,level:l,ans})})});ready()}
 function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.font.family="Tajawal,Tahoma,sans-serif";Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
 function ds(l,items,r){return lv().map(k=>({label:k,data:items.map(x=>pc(by(k),x[1],x[2])),backgroundColor:css(LC[k])+(r?"33":""),borderColor:css(LC[k]),borderWidth:r?2:0,borderRadius:5}))}
-function ready(){if(!lv().includes(cur))cur=lv()[0];tab=0;show();0}
+function ready(){msg.textContent="تم تحليل "+S.length+" طالب";out.style.display="block";if(!lv().includes(cur))cur=lv()[0];tab=0;show();out.scrollIntoView({behavior:"smooth"})}
 function ovw(){
  kp.innerHTML=`<div class="card kpi"><b>${S.length}</b><span>عدد الطلاب</span></div><div class="card kpi"><b>${f1(pc(S,1,95))}</b><span>المتوسط العام</span></div>`+lv().map(k=>`<div class="card kpi"><b style="color:var(${LC[k]})">${f1(pc(by(k),1,95))}</b><span>${k} · ${by(k).length} طالب</span></div>`).join("");
  const bo={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
@@ -102,7 +139,7 @@ function lv_(){
  const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>المتوسط العام ${f1(x.o)}</small><br>`;
  st.innerHTML=all.slice(0,3).map(it).join("");wk.innerHTML=all.slice(-3).reverse().map(it).join("");
  const qa=[];for(let q=1;q<=95;q++){const c={};let ok=0;L1.forEach(s=>{if(s.ans[q-1]===KEY[q-1])ok++;else c[s.ans[q-1]||"–"]=(c[s.ans[q-1]||"–"]||0)+1});const w=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];qa.push({q,v:ok/L1.length*100,w:w?w[0]:"–"})}
- qs.innerHTML="<table><tr><th>السؤال</th><th>الموضوع</th><th>صحيح</th></tr>"+qa.sort((a,b)=>a.v-b.v).slice(0,10).map(x=>`<tr><td>Q${x.q}</td><td>${SECS.find(s=>x.q>=s[1]&&x.q<=s[2])[0]}</td><td class="bad">${f1(x.v)}</td></tr>`).join("")+"</table>";
+ qs.innerHTML="<table><tr><th>السؤال</th><th>الموضوع</th><th>صحيح</th>"+(PUB?"":"<th>المفتاح</th><th>الأكثر اختياراً خطأً</th>")+"</tr>"+qa.sort((a,b)=>a.v-b.v).slice(0,10).map(x=>`<tr><td>Q${x.q}</td><td>${SECS.find(s=>x.q>=s[1]&&x.q<=s[2])[0]}</td><td class="bad">${f1(x.v)}</td>${PUB?"":`<td>${KEY[x.q-1]}</td><td>${x.w}</td>`}</tr>`).join("")+"</table>";
  sd.innerHTML="<table><tr><th>الطالب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w])=>`<tr><td>${s.name}</td><td>${f1(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
 }
 let tab=0,si=0;
@@ -129,8 +166,19 @@ function stu(){
  const sb=SUBS.map(x=>({n:x[0],v:pc([s],x[1],x[2]),o:pc(L1,x[1],x[2])})).sort((a,b)=>b.v-a.v);
  const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>متوسط المستوى ${f1(x.o)}</small><br>`;
  ss1.innerHTML=sb.slice(0,3).map(it).join("");ss2.innerHTML=sb.slice(-3).reverse().map(it).join("");
- smq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
-fetch("data.json?v="+Date.now()).then(r=>r.json()).then(D=>{S=D.map(x=>({name:x.n,level:x.l,ans:x.b}));ready()}).catch(()=>{out.innerHTML='<div class="card">لا توجد نتائج منشورة بعد.</div>'});
+ smq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th>"+(PUB?"":"<th>إجابته</th><th>الصحيح</th>")+"</tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td>${PUB?"":`<td class="bad">${s.ans[q-1]||"–"}</td><td class="good">${KEY[q-1]}</td>`}</tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
+let PUB=false;
+function b64(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return JSON.parse(decodeURIComponent(escape(atob(s))))}
+function hex(b){let h="";for(let i=0;i<b.length;i+=4)h+=parseInt(b.slice(i,i+4).padEnd(4,"0"),2).toString(16);return h}
+function unhex(h){return h.split("").map(c=>parseInt(c,16).toString(2).padStart(4,"0")).join("").slice(0,95)}
+function exp(){if(!S.length){msg.textContent="حلّل البيانات أولاً";return}
+ const d=S.map(s=>[s.name,s.level,hex(s.ans.map((a,i)=>a===KEY[i]?"1":"0").join(""))]);
+ const u=location.href.split("#")[0]+"#r="+b64(d);oj.value=u;oj.select();
+ try{navigator.clipboard.writeText(u).then(()=>msg.textContent="تم نسخ رابط المشاركة",()=>msg.textContent="حدّد الرابط وانسخه")}catch(e){msg.textContent="حدّد الرابط وانسخه"}}
+function boot(){const m=location.hash.match(/^#r=(.+)$/);if(!m)return;
+ try{const d=unb64(m[1]);KEY="1".repeat(95);S=d.map(x=>({name:x[0],level:x[1],ans:unhex(x[2])}));PUB=true;adm.style.display="none";document.querySelector(".hero .sub").textContent="نتائج الاختبار — عرض فقط";ready()}catch(e){msg.textContent="رابط غير صالح"}}
+boot();
 </script>
 </body>
 </html>
