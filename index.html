@@ -56,6 +56,7 @@ tr:last-child td{border-bottom:0}
 <textarea id="ta" placeholder="أو الصق هنا من Excel (مع الصف الأول للعناوين) ثم اضغط تحليل"></textarea>
 <div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 رابط المشاركة العام</button><button onclick="expAll()">📄 تقرير مستقل لكل طالب</button></div>
 <textarea id="oj" readonly placeholder="بعد التحليل اضغط «إنشاء رابط المشاركة» ليظهر الرابط هنا" style="min-height:130px"></textarea>
+<div id="lk" class="g g2" style="margin-top:12px"></div>
 </div>
 
 <div id="out" style="display:none">
@@ -201,12 +202,18 @@ function rep(d){
  rs1.innerHTML=sb.slice(0,3).map(it).join("");rs2.innerHTML=sb.slice(-3).reverse().map(it).join("");
  const wr=[];for(let q=1;q<=95;q++)if(bits[q-1]!=="1")wr.push(q);
  rq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th><th>أجاب بشكل صحيح من المجموعة</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td><td>${d.al[q-1]}٪</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
+function cp(u,btn){const done=()=>{const t=btn.textContent;btn.textContent="✓ تم النسخ";btn.style.background="var(--good)";btn.style.color="#fff";setTimeout(()=>{btn.textContent=t;btn.style.background="";btn.style.color=""},1600)};
+ const fb=()=>{const t=document.createElement("textarea");t.value=u;t.style.cssText="position:fixed;top:0;opacity:0";document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,99999);let ok=false;try{ok=document.execCommand("copy")}catch(e){}t.remove();if(ok)done();else{oj.value=u;oj.select();msg.textContent="حدّد الرابط في المربع وانسخه"}};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(u).then(done,fb);else fb()}
 function expAll(){if(!S.length){msg.textContent="حلّل البيانات أولاً";return}
  const ok=s=>s.ans.map((a,i)=>a===KEY[i]?1:0),pcts=l=>Array.from({length:95},(_,i)=>Math.round(l.reduce((t,s)=>t+ok(s)[i],0)/l.length*100));
- const base=location.href.split("#")[0],al=pcts(S),cache={};
- const o=S.map(s=>{const g=by(s.level);if(!(s.level in cache))cache[s.level]=g.length>=3?pcts(g):null;
-  return s.name+" ("+s.level+")\n"+base+"#s="+b64({n:s.name,l:s.level,b:hex(ok(s).join("")),al,lv:cache[s.level]})}).join("\n\n");
- oj.value=o;oj.select();try{navigator.clipboard.writeText(o).then(()=>msg.textContent="تم نسخ روابط الطلاب",()=>msg.textContent="حدّد النص وانسخه")}catch(e){msg.textContent="حدّد النص وانسخه"}}
+ const base=location.href.split("#")[0],al=pcts(S),cache={};lk.innerHTML="";oj.style.display="none";
+ S.forEach(s=>{const g=by(s.level);if(!(s.level in cache))cache[s.level]=g.length>=3?pcts(g):null;
+  const u=base+"#s="+b64({n:s.name,l:s.level,b:hex(ok(s).join("")),al,lv:cache[s.level]}),sc=ok(s).reduce((a,b)=>a+b,0);
+  const d=document.createElement("div");d.className="card";d.style.cssText="padding:12px;border-right:5px solid var("+LC[s.level]+")";
+  d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${s.name}</b><small>${s.level} · ${sc}/95</small></div><div class="row" style="margin:8px 0 0"><button class="on" style="flex:1">📋 نسخ الرابط</button><a class="btn" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent("تقرير نتيجتك في اختبار SBFD R1 2026:\n"+u)}">واتساب</a></div>`;
+  d.querySelector("button").onclick=function(){cp(u,this)};lk.appendChild(d)});
+ msg.textContent="لكل طالب بطاقة برابطه — اضغط «نسخ الرابط»";lk.scrollIntoView({behavior:"smooth",block:"start"})}
 function boot(){const ms=location.hash.match(/^#s=(.+)$/);if(ms){try{rep(unb64(ms[1]))}catch(e){msg.textContent="رابط غير صالح"}return}
  const m=location.hash.match(/^#r=(.+)$/);if(!m)return;
  try{const d=unb64(m[1]);KEY="1".repeat(95);S=d.map(x=>({name:x[0],level:x[1],ans:unhex(x[2])}));PUB=true;adm.style.display="none";document.querySelector(".hero .sub").textContent="نتائج الاختبار — عرض فقط";ready()}catch(e){msg.textContent="رابط غير صالح"}}
