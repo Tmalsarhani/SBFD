@@ -7,14 +7,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f2f6f9;--card:#fff;--tx:#0f2a3d;--mut:#6b8195;--bd:#e2e9ef;--pri:#0b5c73;--r1:#0d9488;--r2:#f59e0b;--r3:#6366f1;--good:#16a34a;--bad:#e11d48;--sh:0 1px 2px rgba(15,42,61,.05),0 8px 24px rgba(15,42,61,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1720;--card:#12232f;--tx:#e6eef4;--mut:#8fa5b6;--bd:#223645;--pri:#0e7490;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#fb7185;--sh:none;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0b1720;--card:#12232f;--tx:#e6eef4;--mut:#8fa5b6;--bd:#223645;--pri:#0e7490;--r1:#2dd4bf;--r2:#fbbf24;--r3:#a5b4fc;--good:#4ade80;--bad:#fb7185;--sh:none;color-scheme:dark}
+:root{--bg:#f4f6fa;--card:#fff;--tx:#14213d;--mut:#6a7894;--bd:#e1e6ef;--pri:#1b2a4e;--r1:#4f86c6;--r2:#e0a526;--r3:#2f9e8f;--good:#3f9b3f;--bad:#d6405a;--warn:#f59e42;--warn-t:#b4560f;--sh:0 1px 2px rgba(27,42,78,.06),0 8px 24px rgba(27,42,78,.09);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1426;--card:#16203a;--tx:#eaf0fb;--mut:#9aa8c6;--bd:#27355a;--pri:#34508f;--r1:#7fb0ea;--r2:#f2c14e;--r3:#4fcbb8;--good:#6fd36f;--bad:#fb7185;--warn:#fb923c;--warn-t:#fb923c;--sh:none;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1426;--card:#16203a;--tx:#eaf0fb;--mut:#9aa8c6;--bd:#27355a;--pri:#34508f;--r1:#7fb0ea;--r2:#f2c14e;--r3:#4fcbb8;--good:#6fd36f;--bad:#fb7185;--warn:#fb923c;--warn-t:#fb923c;--sh:none;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:"Tajawal","Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;line-height:1.65}
 .w{max-width:1100px;margin:0 auto;padding:14px}
-.hero{background:linear-gradient(135deg,var(--pri),var(--r1));color:#fff;border-radius:20px;padding:22px 20px;margin-bottom:14px;box-shadow:var(--sh)}
-.hero h1{font-size:23px;margin:0 0 4px;color:#fff}.hero .sub{color:#d6f3ef;margin:0;font-size:13px}
+.hero{border-bottom:4px solid var(--r2);background:linear-gradient(135deg,#1b2a4e,#2b3f73 65%,#4f86c6);color:#fff;border-radius:20px;padding:22px 20px;margin-bottom:14px;box-shadow:var(--sh)}
+.hero h1{font-size:23px;margin:0 0 4px;color:#fff}.hero .sub{color:#dbe6f7;margin:0;font-size:13px}
 h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
 h2::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--pri)}h2.good::before{background:var(--good)}h2.bad::before{background:var(--bad)}
 .sub{color:var(--mut);font-size:13px;margin-bottom:12px}
@@ -35,6 +35,8 @@ tr:last-child td{border-bottom:0}
 .bar{height:10px;border-radius:5px;background:var(--bd);overflow:hidden;margin:4px 0 6px}.bar i{display:block;height:100%;border-radius:5px}
 .it{font-size:13px}.it div{display:flex;justify-content:space-between}
 .good{color:var(--good)}.bad{color:var(--bad)}small{color:var(--mut)}
+.pill{display:inline-block;padding:2px 11px;border-radius:999px;font-weight:700;font-size:12px}.p-g{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}.p-m{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn-t)}.p-b{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}.kpi.s b{font-size:15px;line-height:1.4}
+@media print{#tb,#adm,.row button{display:none!important}.card{box-shadow:none;break-inside:avoid}body{background:#fff}.hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -52,8 +54,8 @@ tr:last-child td{border-bottom:0}
 <button onclick="cpl()">نسخ رأس القالب</button>
 <span id="msg" class="sub"></span></div>
 <textarea id="ta" placeholder="أو الصق هنا من Excel (مع الصف الأول للعناوين) ثم اضغط تحليل"></textarea>
-<div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 إنشاء رابط المشاركة</button></div>
-<textarea id="oj" readonly placeholder="بعد التحليل اضغط «إنشاء رابط المشاركة» ليظهر الرابط هنا" style="min-height:50px"></textarea>
+<div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 رابط المشاركة العام</button><button onclick="expAll()">📄 تقرير مستقل لكل طالب</button></div>
+<textarea id="oj" readonly placeholder="بعد التحليل اضغط «إنشاء رابط المشاركة» ليظهر الرابط هنا" style="min-height:130px"></textarea>
 </div>
 
 <div id="out" style="display:none">
@@ -67,7 +69,7 @@ tr:last-child td{border-bottom:0}
 </div>
 <div class="card"><h2>المقارنة التفصيلية (٪ إجابات صحيحة)</h2><div class="ov" id="hm"></div></div>
 
-</div><div id="v1"><div class="card"><h2>تحليل المستوى</h2><div class="row" id="lv"></div>
+</div><div id="v1"><div class="card"><h2>تحليل المستوى</h2><div class="row" id="lv"></div><div class="g g4" id="ls" style="margin-bottom:14px"></div>
 <div class="g g2" style="margin-bottom:14px"><div class="cv"><canvas id="c4"></canvas></div><div class="cv"><canvas id="c5"></canvas></div></div>
 <div class="g g2"><div><h2 class="good">نقاط القوة</h2><div id="st" class="it"></div></div>
 <div><h2 class="bad">نقاط الضعف</h2><div id="wk" class="it"></div></div></div></div>
@@ -82,6 +84,10 @@ tr:last-child td{border-bottom:0}
 <div class="g g2"><div class="card"><h2>الأداء حسب الموضوع</h2><div class="cv"><canvas id="c6"></canvas></div></div><div class="card"><h2>المواضيع الفرعية</h2><div class="cv"><canvas id="c7"></canvas></div></div></div>
 <div class="g g2"><div class="card"><h2 class="good">نقاط القوة</h2><div id="ss1" class="it"></div></div><div class="card"><h2 class="bad">نقاط الضعف</h2><div id="ss2" class="it"></div></div></div>
 <div class="card"><h2>الأسئلة الخاطئة</h2><div class="ov" id="smq"></div></div></div>
+<div id="rp" style="display:none"><div class="g g4" id="rk"></div>
+<div class="g g2"><div class="card"><h2>الأداء حسب الموضوع</h2><div class="cv"><canvas id="c8"></canvas></div></div><div class="card"><h2>المواضيع الفرعية</h2><div class="cv"><canvas id="c9"></canvas></div></div></div>
+<div class="g g2"><div class="card"><h2 class="good">نقاط القوة</h2><div id="rs1" class="it"></div></div><div class="card"><h2 class="bad">نقاط الضعف</h2><div id="rs2" class="it"></div></div></div>
+<div class="card"><h2>أسئلة تحتاج مراجعة</h2><div class="ov" id="rq"></div></div></div>
 </div>
 </div>
 
@@ -120,6 +126,7 @@ f.onchange=e=>{const fl=e.target.files[0];if(!fl)return;const r=new FileReader()
 function demo(){let s=7;KEY=Array.from({length:95},(_,i)=>"ABCD"[(i*7+3)%4]).join("");const R=()=>(s=(s*16807)%2147483647)/2147483647;const base={R1:.55,R2:.68,R3:.8},wk={R1:[5,6,3],R2:[3,6],R3:[7]};S=[];
  const NM={R1:["احمد الخالدي","محمد العتيبي","عائشة"],R2:["علي الخثعمي","ماجد الزهراني"],R3:["الجريسي","الخالدي"]};["R1","R2","R3"].forEach(l=>{NM[l].forEach((nm,i)=>{const ab=base[l]+(R()-.5)*.2,ans=[];for(let q=1;q<=95;q++){let p=ab;const si=SUBS.findIndex(x=>q>=x[1]&&q<=x[2]);if((wk[l]||[]).includes(si))p-=.25;if(q>=86)p-=l==="R1"?.1:0;
  if(R()<p)ans.push(KEY[q-1]);else{const o="ABCD".replace(KEY[q-1],"");ans.push(o[Math.floor(R()*3)])}}S.push({name:nm,level:l,ans})})});ready()}
+function pill(v){return `<span class="pill ${v>=70?"p-g":v>=50?"p-m":"p-b"}">${f1(v)}</span>`}
 function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.font.family="Tajawal,Tahoma,sans-serif";Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
 function ds(l,items,r){return lv().map(k=>({label:k,data:items.map(x=>pc(by(k),x[1],x[2])),backgroundColor:css(LC[k])+(r?"33":""),borderColor:css(LC[k]),borderWidth:r?2:0,borderRadius:5}))}
 function ready(){msg.textContent="تم تحليل "+S.length+" طالب";out.style.display="block";if(!lv().includes(cur))cur=lv()[0];tab=0;show();out.scrollIntoView({behavior:"smooth"})}
@@ -130,7 +137,7 @@ function ovw(){
  mk("c2",{type:"bar",data:{labels:DOCS.map(x=>x[0]),datasets:ds(0,DOCS)},options:bo});
  mk("c3",{type:"radar",data:{labels:SUBS.map(x=>x[0]),datasets:ds(0,SUBS,1)},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false}}}}});
  const rowsT=[...SECS.map(x=>[x[0],x[1],x[2],1]),...SUBS.map(x=>[x[0],x[1],x[2],0]),...DOCS.map(x=>["👤 "+x[0],x[1],x[2],1])];
- const col=v=>v==null?"":`background:color-mix(in srgb,${v>=70?"var(--good)":v>=50?"var(--r2)":"var(--bad)"} 28%,transparent)`;
+ const col=v=>v==null?"":`background:color-mix(in srgb,${v>=70?"var(--good)":v>=50?"var(--warn)":"var(--bad)"} 28%,transparent)`;
  hm.innerHTML="<table><tr><th></th>"+lv().map(k=>`<th>${k}</th>`).join("")+"<th>الكل</th></tr>"+rowsT.map(r=>`<tr><td>${r[3]?"<b>"+r[0]+"</b>":r[0]}</td>`+lv().concat([0]).map(k=>{const v=pc(k?by(k):S,r[1],r[2]);return`<td style="${col(v)}">${f1(v)}</td>`}).join("")+"</tr>").join("")+"</table>";
 }
 function lv_(){
@@ -138,9 +145,10 @@ function lv_(){
  const L1=by(cur),all=SUBS.map(x=>({n:x[0],v:pc(L1,x[1],x[2]),o:pc(S,x[1],x[2])})).sort((a,b)=>b.v-a.v);
  const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[cur]})"></i></div><small>المتوسط العام ${f1(x.o)}</small><br>`;
  st.innerHTML=all.slice(0,3).map(it).join("");wk.innerHTML=all.slice(-3).reverse().map(it).join("");
+ document.getElementById("ls").innerHTML=`<div class="card kpi" style="border-top-color:var(${LC[cur]})"><b>${pill(pc(L1,1,95))}</b><span>متوسط ${cur}</span></div><div class="card kpi s" style="border-top-color:var(--good)"><b>${all[0].n}</b><span>الأقوى · ${f1(all[0].v)}</span></div><div class="card kpi s" style="border-top-color:var(--bad)"><b>${all[all.length-1].n}</b><span>الأضعف · ${f1(all[all.length-1].v)}</span></div>`;
  const qa=[];for(let q=1;q<=95;q++){const c={};let ok=0;L1.forEach(s=>{if(s.ans[q-1]===KEY[q-1])ok++;else c[s.ans[q-1]||"–"]=(c[s.ans[q-1]||"–"]||0)+1});const w=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];qa.push({q,v:ok/L1.length*100,w:w?w[0]:"–"})}
  qs.innerHTML="<table><tr><th>السؤال</th><th>الموضوع</th><th>صحيح</th>"+(PUB?"":"<th>المفتاح</th><th>الأكثر اختياراً خطأً</th>")+"</tr>"+qa.sort((a,b)=>a.v-b.v).slice(0,10).map(x=>`<tr><td>Q${x.q}</td><td>${SECS.find(s=>x.q>=s[1]&&x.q<=s[2])[0]}</td><td class="bad">${f1(x.v)}</td>${PUB?"":`<td>${KEY[x.q-1]}</td><td>${x.w}</td>`}</tr>`).join("")+"</table>";
- sd.innerHTML="<table><tr><th>الطالب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w])=>`<tr><td>${s.name}</td><td>${f1(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
+ sd.innerHTML="<table><tr><th>الطالب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w],i)=>`<tr><td>${["🥇","🥈","🥉"][i]||""} ${s.name}</td><td>${pill(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
 }
 let tab=0,si=0;
 const BO={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
@@ -176,7 +184,31 @@ function exp(){if(!S.length){msg.textContent="حلّل البيانات أولا
  const d=S.map(s=>[s.name,s.level,hex(s.ans.map((a,i)=>a===KEY[i]?"1":"0").join(""))]);
  const u=location.href.split("#")[0]+"#r="+b64(d);oj.value=u;oj.select();
  try{navigator.clipboard.writeText(u).then(()=>msg.textContent="تم نسخ رابط المشاركة",()=>msg.textContent="حدّد الرابط وانسخه")}catch(e){msg.textContent="حدّد الرابط وانسخه"}}
-function boot(){const m=location.hash.match(/^#r=(.+)$/);if(!m)return;
+function rep(d){
+ const bits=unhex(d.b),pm=(f,a,z)=>{let s=0;for(let q=a;q<=z;q++)s+=f(q);return s/(z-a+1)};
+ const my=(a,z)=>pm(q=>bits[q-1]==="1"?100:0,a,z),al=(a,z)=>pm(q=>d.al[q-1],a,z),lv=d.lv?(a,z)=>pm(q=>d.lv[q-1],a,z):null;
+ adm.style.display="none";out.style.display="block";kp.style.display="none";tb.style.display="none";v0.style.display="none";v1.style.display="none";v2.style.display="none";rp.style.display="block";
+ document.querySelector(".hero h1").textContent="تقرير الطالب: "+d.n;document.querySelector(".hero .sub").textContent=d.l+" · اختبار SBFD R1 2026 — للاطلاع الشخصي فقط";document.title="تقرير "+d.n;
+ const T=my(1,95),A=al(1,95),ok=bits.slice(0,95).split("").filter(x=>x==="1").length;
+ rk.innerHTML=`<div class="card kpi" style="border-top-color:var(${LC[d.l]})"><b>${ok}/95</b><span>${pill(T)} درجتك</span></div><div class="card kpi"><b>${f1(A)}</b><span>متوسط المجموعة</span></div>`+(lv?`<div class="card kpi"><b>${f1(lv(1,95))}</b><span>متوسط ${d.l}</span></div>`:"")+`<div class="card kpi"><b>${95-ok}</b><span>أسئلة تحتاج مراجعة</span></div>`;
+ const ds=(arr,r)=>{const o=[{label:"أنت",data:arr.map(x=>my(x[1],x[2])),backgroundColor:css(LC[d.l])+(r?"44":""),borderColor:css(LC[d.l]),borderWidth:r?2:0,borderRadius:5}];
+  if(lv)o.push({label:"متوسط "+d.l,data:arr.map(x=>lv(x[1],x[2])),backgroundColor:css("--pri")+(r?"22":""),borderColor:css("--pri"),borderWidth:r?2:0,borderRadius:5});
+  o.push({label:"متوسط المجموعة",data:arr.map(x=>al(x[1],x[2])),backgroundColor:css("--mut")+(r?"22":""),borderColor:css("--mut"),borderWidth:r?2:0,borderRadius:5});return o};
+ mk("c8",{type:"bar",data:{labels:SECS.map(x=>x[0]),datasets:ds(SECS,0)},options:BO});
+ mk("c9",{type:"radar",data:{labels:SUBS.map(x=>x[0]),datasets:ds(SUBS,1)},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false}}}}});
+ const sb=SUBS.map(x=>({n:x[0],v:my(x[1],x[2]),o:al(x[1],x[2])})).sort((a,b)=>b.v-a.v);
+ const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[d.l]})"></i></div><small>متوسط المجموعة ${f1(x.o)}</small><br>`;
+ rs1.innerHTML=sb.slice(0,3).map(it).join("");rs2.innerHTML=sb.slice(-3).reverse().map(it).join("");
+ const wr=[];for(let q=1;q<=95;q++)if(bits[q-1]!=="1")wr.push(q);
+ rq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th><th>أجاب بشكل صحيح من المجموعة</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td><td>${d.al[q-1]}٪</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
+function expAll(){if(!S.length){msg.textContent="حلّل البيانات أولاً";return}
+ const ok=s=>s.ans.map((a,i)=>a===KEY[i]?1:0),pcts=l=>Array.from({length:95},(_,i)=>Math.round(l.reduce((t,s)=>t+ok(s)[i],0)/l.length*100));
+ const base=location.href.split("#")[0],al=pcts(S),cache={};
+ const o=S.map(s=>{const g=by(s.level);if(!(s.level in cache))cache[s.level]=g.length>=3?pcts(g):null;
+  return s.name+" ("+s.level+")\n"+base+"#s="+b64({n:s.name,l:s.level,b:hex(ok(s).join("")),al,lv:cache[s.level]})}).join("\n\n");
+ oj.value=o;oj.select();try{navigator.clipboard.writeText(o).then(()=>msg.textContent="تم نسخ روابط الطلاب",()=>msg.textContent="حدّد النص وانسخه")}catch(e){msg.textContent="حدّد النص وانسخه"}}
+function boot(){const ms=location.hash.match(/^#s=(.+)$/);if(ms){try{rep(unb64(ms[1]))}catch(e){msg.textContent="رابط غير صالح"}return}
+ const m=location.hash.match(/^#r=(.+)$/);if(!m)return;
  try{const d=unb64(m[1]);KEY="1".repeat(95);S=d.map(x=>({name:x[0],level:x[1],ans:unhex(x[2])}));PUB=true;adm.style.display="none";document.querySelector(".hero .sub").textContent="نتائج الاختبار — عرض فقط";ready()}catch(e){msg.textContent="رابط غير صالح"}}
 boot();
 </script>
