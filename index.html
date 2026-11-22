@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>تحليل اختبار SBFD R1 2026</title>
+<title>Pre Assessment Exam</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -42,11 +42,11 @@ tr:last-child td{border-bottom:0}
 </head>
 <body>
 <div class="w">
-<header class="hero"><h1>تحليل نتائج اختبار SBFD ‏R1 ‏2026</h1><div class="sub">تحليل حسب المستوى والموضوع والطبيب — 95 سؤالاً</div></header>
+<header class="hero"><h1 dir="ltr">Pre Assessment Exam</h1><div class="sub">تحليل حسب المستوى والموضوع والطبيب — 95 سؤالاً</div></header>
 
 <div class="card" id="adm">
 <h2>إدخال الإجابات</h2>
-<div class="sub">⚠️ يجب أن يحتوي الملف على عمود <b>Key</b> (الإجابات الصحيحة) — المفتاح لا يُحفظ في الصفحة. يدعم قالبين: عمودي (عمود لكل طالب) أو أفقي. الأفقي: صف لكل طالب: عمود <b>Level</b> (R1/R2/R3)، عمود <b>Name</b> (اختياري)، ثم أعمدة <b>Q1</b> … <b>Q95</b> بحروف A–D. الأعمدة الفارغة تُحسب خطأ.</div>
+<div class="sub">⚠️ يجب أن يحتوي الملف على عمود <b>Key</b> (الإجابات الصحيحة) — المفتاح لا يُحفظ في الصفحة. يدعم قالبين: عمودي (عمود لكل دكتور) أو أفقي. الأفقي: صف لكل دكتور: عمود <b>Level</b> (R1/R2/R3)، عمود <b>Name</b> (اختياري)، ثم أعمدة <b>Q1</b> … <b>Q95</b> بحروف A–D. الأعمدة الفارغة تُحسب خطأ.</div>
 <div class="row">
 <input type="file" id="f" accept=".xlsx,.xls,.csv" style="display:none">
 <button onclick="f.click()">رفع ملف Excel / CSV</button>
@@ -54,7 +54,7 @@ tr:last-child td{border-bottom:0}
 <button onclick="cpl()">نسخ رأس القالب</button>
 <span id="msg" class="sub"></span></div>
 <textarea id="ta" placeholder="أو الصق هنا من Excel (مع الصف الأول للعناوين) ثم اضغط تحليل"></textarea>
-<div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 رابط المشاركة العام</button><button onclick="expAll()">📄 تقرير مستقل لكل طالب</button></div>
+<div class="row"><button onclick="go(ta.value)">تحليل</button><button onclick="exp()">🔗 رابط المشاركة العام</button><button onclick="expAll()">📄 تقرير مستقل لكل دكتور</button></div>
 <textarea id="oj" readonly placeholder="بعد التحليل اضغط «إنشاء رابط المشاركة» ليظهر الرابط هنا" style="min-height:130px"></textarea>
 <div id="lk" class="g g2" style="margin-top:12px"></div>
 </div>
@@ -77,10 +77,10 @@ tr:last-child td{border-bottom:0}
 
 <div class="g g2">
 <div class="card"><h2>أكثر الأسئلة خطأً في المستوى</h2><div class="ov" id="qs"></div></div>
-<div class="card"><h2>الطلاب في المستوى</h2><div class="ov" id="sd"></div></div>
+<div class="card"><h2>الأطباء في المستوى</h2><div class="ov" id="sd"></div></div>
 </div>
 </div>
-<div id="v2"><div class="card"><h2>تحليل الطالب</h2><div class="row" id="lv2"></div><div class="row"><select id="ss" onchange="si=+this.value;stu()" style="font:inherit;padding:7px;border-radius:9px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);min-width:220px"></select></div></div>
+<div id="v2"><div class="card"><h2>تحليل الطبيب</h2><div class="row" id="lv2"></div><div class="row"><select id="ss" onchange="si=+this.value;stu()" style="font:inherit;padding:7px;border-radius:9px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);min-width:220px"></select></div></div>
 <div class="g g4" id="sk"></div>
 <div class="g g2"><div class="card"><h2>الأداء حسب الموضوع</h2><div class="cv"><canvas id="c6"></canvas></div></div><div class="card"><h2>المواضيع الفرعية</h2><div class="cv"><canvas id="c7"></canvas></div></div></div>
 <div class="g g2"><div class="card"><h2 class="good">نقاط القوة</h2><div id="ss1" class="it"></div></div><div class="card"><h2 class="bad">نقاط الضعف</h2><div id="ss2" class="it"></div></div></div>
@@ -120,7 +120,7 @@ function parse(rows){
  const out=[];
  rows.slice(1).forEach((r,k)=>{if(!r||!r.length)return;const m=String(r[li]||"").match(/[123]/);if(!m)return;
   const ans=[];for(let q=1;q<=95;q++){let v=qi[q]==null?"":String(r[qi[q]]==null?"":r[qi[q]]).trim().toUpperCase()[0]||"";ans.push(L[v]||v)}
-  out.push({name:ni>=0&&r[ni]?String(r[ni]):"طالب "+(k+1),level:"R"+m[0],ans})});
+  out.push({name:ni>=0&&r[ni]?String(r[ni]):"دكتور "+(k+1),level:"R"+m[0],ans})});
  if(!out.length)throw new Error("لا توجد صفوف صالحة");return out}
 function go(t){try{const d=t.includes("\t")?"\t":",";S=parse(t.trim().split(/\r?\n/).map(l=>l.split(d)));ready()}catch(e){msg.textContent="خطأ: "+e.message}}
 f.onchange=e=>{const fl=e.target.files[0];if(!fl)return;const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:"array"});S=parse(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""}));ready()}catch(x){msg.textContent="خطأ: "+x.message}};r.readAsArrayBuffer(fl)};
@@ -130,9 +130,9 @@ function demo(){let s=7;KEY=Array.from({length:95},(_,i)=>"ABCD"[(i*7+3)%4]).joi
 function pill(v){return `<span class="pill ${v>=70?"p-g":v>=50?"p-m":"p-b"}">${f1(v)}</span>`}
 function mk(id,cfg){if(ch[id])ch[id].destroy();Chart.defaults.font.family="Tajawal,Tahoma,sans-serif";Chart.defaults.color=css("--mut");Chart.defaults.borderColor=css("--bd");ch[id]=new Chart(document.getElementById(id),cfg)}
 function ds(l,items,r){return lv().map(k=>({label:k,data:items.map(x=>pc(by(k),x[1],x[2])),backgroundColor:css(LC[k])+(r?"33":""),borderColor:css(LC[k]),borderWidth:r?2:0,borderRadius:5}))}
-function ready(){msg.textContent="تم تحليل "+S.length+" طالب";out.style.display="block";if(!lv().includes(cur))cur=lv()[0];tab=0;show();out.scrollIntoView({behavior:"smooth"})}
+function ready(){msg.textContent="تم تحليل "+S.length+" دكتور";out.style.display="block";if(!lv().includes(cur))cur=lv()[0];tab=0;show();out.scrollIntoView({behavior:"smooth"})}
 function ovw(){
- kp.innerHTML=`<div class="card kpi"><b>${S.length}</b><span>عدد الطلاب</span></div><div class="card kpi"><b>${f1(pc(S,1,95))}</b><span>المتوسط العام</span></div>`+lv().map(k=>`<div class="card kpi"><b style="color:var(${LC[k]})">${f1(pc(by(k),1,95))}</b><span>${k} · ${by(k).length} طالب</span></div>`).join("");
+ kp.innerHTML=`<div class="card kpi"><b>${S.length}</b><span>عدد الأطباء</span></div><div class="card kpi"><b>${f1(pc(S,1,95))}</b><span>المتوسط العام</span></div>`+lv().map(k=>`<div class="card kpi"><b style="color:var(${LC[k]})">${f1(pc(by(k),1,95))}</b><span>${k} · ${by(k).length} أطباء</span></div>`).join("");
  const bo={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
  mk("c1",{type:"bar",data:{labels:SECS.map(x=>x[0]),datasets:ds(0,SECS)},options:bo});
  mk("c2",{type:"bar",data:{labels:DOCS.map(x=>x[0]),datasets:ds(0,DOCS)},options:bo});
@@ -149,12 +149,12 @@ function lv_(){
  document.getElementById("ls").innerHTML=`<div class="card kpi" style="border-top-color:var(${LC[cur]})"><b>${pill(pc(L1,1,95))}</b><span>متوسط ${cur}</span></div><div class="card kpi s" style="border-top-color:var(--good)"><b>${all[0].n}</b><span>الأقوى · ${f1(all[0].v)}</span></div><div class="card kpi s" style="border-top-color:var(--bad)"><b>${all[all.length-1].n}</b><span>الأضعف · ${f1(all[all.length-1].v)}</span></div>`;
  const qa=[];for(let q=1;q<=95;q++){const c={};let ok=0;L1.forEach(s=>{if(s.ans[q-1]===KEY[q-1])ok++;else c[s.ans[q-1]||"–"]=(c[s.ans[q-1]||"–"]||0)+1});const w=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];qa.push({q,v:ok/L1.length*100,w:w?w[0]:"–"})}
  qs.innerHTML="<table><tr><th>السؤال</th><th>الموضوع</th><th>صحيح</th>"+(PUB?"":"<th>المفتاح</th><th>الأكثر اختياراً خطأً</th>")+"</tr>"+qa.sort((a,b)=>a.v-b.v).slice(0,10).map(x=>`<tr><td>Q${x.q}</td><td>${SECS.find(s=>x.q>=s[1]&&x.q<=s[2])[0]}</td><td class="bad">${f1(x.v)}</td>${PUB?"":`<td>${KEY[x.q-1]}</td><td>${x.w}</td>`}</tr>`).join("")+"</table>";
- sd.innerHTML="<table><tr><th>الطالب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w],i)=>`<tr><td>${["🥇","🥈","🥉"][i]||""} ${s.name}</td><td>${pill(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
+ sd.innerHTML="<table><tr><th>الطبيب</th><th>الدرجة</th><th>الأضعف</th></tr>"+L1.map(s=>{const t=pc([s],1,95),w=SECS.map(x=>[x[0],pc([s],x[1],x[2])]).sort((a,b)=>a[1]-b[1])[0];return[s,t,w]}).sort((a,b)=>b[1]-a[1]).map(([s,t,w],i)=>`<tr><td>${["🥇","🥈","🥉"][i]||""} ${s.name}</td><td>${pill(t)}</td><td><small>${w[0]} (${f1(w[1])})</small></td></tr>`).join("")+"</table>";
 }
 let tab=0,si=0;
 const BO={responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"٪"}}}};
 function show(){
- tb.innerHTML=["نظرة عامة","كل مستوى","كل طالب"].map((x,i)=>`<button class="${i===tab?"on":""}" onclick="tab=${i};show()">${x}</button>`).join("");
+ tb.innerHTML=["نظرة عامة","كل مستوى","كل دكتور"].map((x,i)=>`<button class="${i===tab?"on":""}" onclick="tab=${i};show()">${x}</button>`).join("");
  v0.style.display=tab===0?"":"none";v1.style.display=tab===1?"":"none";v2.style.display=tab===2?"":"none";
  if(tab===0)ovw();else if(tab===1)lv_();else stu()}
 function lvc(){const L1=by(cur);
@@ -177,6 +177,8 @@ function stu(){
  ss1.innerHTML=sb.slice(0,3).map(it).join("");ss2.innerHTML=sb.slice(-3).reverse().map(it).join("");
  smq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th>"+(PUB?"":"<th>إجابته</th><th>الصحيح</th>")+"</tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td>${PUB?"":`<td class="bad">${s.ans[q-1]||"–"}</td><td class="good">${KEY[q-1]}</td>`}</tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
 let PUB=false;
+const FEM=["عائشة","هيا"];
+const dr=n=>(FEM.some(f=>String(n).trim().startsWith(f))?"الدكتورة ":"الدكتور ")+n;
 function b64(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
 function unb64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return JSON.parse(decodeURIComponent(escape(atob(s))))}
 function hex(b){let h="";for(let i=0;i<b.length;i+=4)h+=parseInt(b.slice(i,i+4).padEnd(4,"0"),2).toString(16);return h}
@@ -185,11 +187,14 @@ function exp(){if(!S.length){msg.textContent="حلّل البيانات أولا
  const d=S.map(s=>[s.name,s.level,hex(s.ans.map((a,i)=>a===KEY[i]?"1":"0").join(""))]);
  const u=location.href.split("#")[0]+"#r="+b64(d);oj.value=u;oj.select();
  try{navigator.clipboard.writeText(u).then(()=>msg.textContent="تم نسخ رابط المشاركة",()=>msg.textContent="حدّد الرابط وانسخه")}catch(e){msg.textContent="حدّد الرابط وانسخه"}}
+function pk(d){const nb=new TextEncoder().encode(d.n),has=!!d.lv,o=22+(has?9:0),u=new Uint8Array(o+nb.length);u[0]=+d.l[1]|(has?8:0);for(let i=0;i<12;i++)u[1+i]=parseInt(d.b.slice(i*8,i*8+8).padEnd(8,"0"),2);u.set(d.al,13);if(has)u.set(d.lv,22);u.set(nb,o);let s="";u.forEach(c=>s+=String.fromCharCode(c));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function upk(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";const u=Uint8Array.from(atob(t),c=>c.charCodeAt(0)),has=!!(u[0]&8);let b="";for(let i=1;i<13;i++)b+=u[i].toString(2).padStart(8,"0");const o=22+(has?9:0);return{l:"R"+(u[0]&7),b:b.slice(0,95),al:Array.from(u.slice(13,22)),lv:has?Array.from(u.slice(22,31)):null,n:new TextDecoder().decode(u.slice(o))}}
+function gs(a,x,z){let s=0,n=0;SUBS.forEach((p,i)=>{if(p[1]>=x&&p[2]<=z){const w=p[2]-p[1]+1;s+=a[i]*w;n+=w}});return n?s/n:0}
 function rep(d){
- const bits=unhex(d.b),pm=(f,a,z)=>{let s=0;for(let q=a;q<=z;q++)s+=f(q);return s/(z-a+1)};
- const my=(a,z)=>pm(q=>bits[q-1]==="1"?100:0,a,z),al=(a,z)=>pm(q=>d.al[q-1],a,z),lv=d.lv?(a,z)=>pm(q=>d.lv[q-1],a,z):null;
+ const bits=d.b,pm=(f,a,z)=>{let s=0;for(let q=a;q<=z;q++)s+=f(q);return s/(z-a+1)};
+ const my=(a,z)=>pm(q=>bits[q-1]==="1"?100:0,a,z),al=(a,z)=>gs(d.al,a,z),lv=d.lv?(a,z)=>gs(d.lv,a,z):null;
  adm.style.display="none";out.style.display="block";kp.style.display="none";tb.style.display="none";v0.style.display="none";v1.style.display="none";v2.style.display="none";rp.style.display="block";
- document.querySelector(".hero h1").textContent="تقرير الطالب: "+d.n;document.querySelector(".hero .sub").textContent=d.l+" · اختبار SBFD R1 2026 — للاطلاع الشخصي فقط";document.title="تقرير "+d.n;
+ document.querySelector(".hero h1").textContent=dr(d.n)+" · "+d.l;document.querySelector(".hero .sub").textContent="Pre Assessment Exam — تقرير شخصي للاطلاع فقط";document.title="تقرير "+dr(d.n);
  const T=my(1,95),A=al(1,95),ok=bits.slice(0,95).split("").filter(x=>x==="1").length;
  rk.innerHTML=`<div class="card kpi" style="border-top-color:var(${LC[d.l]})"><b>${ok}/95</b><span>${pill(T)} درجتك</span></div><div class="card kpi"><b>${f1(A)}</b><span>متوسط المجموعة</span></div>`+(lv?`<div class="card kpi"><b>${f1(lv(1,95))}</b><span>متوسط ${d.l}</span></div>`:"")+`<div class="card kpi"><b>${95-ok}</b><span>أسئلة تحتاج مراجعة</span></div>`;
  const ds=(arr,r)=>{const o=[{label:"أنت",data:arr.map(x=>my(x[1],x[2])),backgroundColor:css(LC[d.l])+(r?"44":""),borderColor:css(LC[d.l]),borderWidth:r?2:0,borderRadius:5}];
@@ -201,20 +206,20 @@ function rep(d){
  const it=x=>`<div><span>${x.n}</span><b>${f1(x.v)}</b></div><div class="bar"><i style="width:${x.v}%;background:var(${LC[d.l]})"></i></div><small>متوسط المجموعة ${f1(x.o)}</small><br>`;
  rs1.innerHTML=sb.slice(0,3).map(it).join("");rs2.innerHTML=sb.slice(-3).reverse().map(it).join("");
  const wr=[];for(let q=1;q<=95;q++)if(bits[q-1]!=="1")wr.push(q);
- rq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th><th>أجاب بشكل صحيح من المجموعة</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td><td>${d.al[q-1]}٪</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
+ rq.innerHTML=wr.length?"<table><tr><th>السؤال</th><th>الموضوع</th></tr>"+wr.map(q=>`<tr><td>Q${q}</td><td>${SECS.find(x=>q>=x[1]&&q<=x[2])[0]}</td></tr>`).join("")+"</table>":"لا توجد أخطاء 🎉"}
 function cp(u,btn){const done=()=>{const t=btn.textContent;btn.textContent="✓ تم النسخ";btn.style.background="var(--good)";btn.style.color="#fff";setTimeout(()=>{btn.textContent=t;btn.style.background="";btn.style.color=""},1600)};
  const fb=()=>{const t=document.createElement("textarea");t.value=u;t.style.cssText="position:fixed;top:0;opacity:0";document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,99999);let ok=false;try{ok=document.execCommand("copy")}catch(e){}t.remove();if(ok)done();else{oj.value=u;oj.select();msg.textContent="حدّد الرابط في المربع وانسخه"}};
  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(u).then(done,fb);else fb()}
 function expAll(){if(!S.length){msg.textContent="حلّل البيانات أولاً";return}
- const ok=s=>s.ans.map((a,i)=>a===KEY[i]?1:0),pcts=l=>Array.from({length:95},(_,i)=>Math.round(l.reduce((t,s)=>t+ok(s)[i],0)/l.length*100));
- const base=location.href.split("#")[0],al=pcts(S),cache={};lk.innerHTML="";oj.style.display="none";
- S.forEach(s=>{const g=by(s.level);if(!(s.level in cache))cache[s.level]=g.length>=3?pcts(g):null;
-  const u=base+"#s="+b64({n:s.name,l:s.level,b:hex(ok(s).join("")),al,lv:cache[s.level]}),sc=ok(s).reduce((a,b)=>a+b,0);
+ const ok=s=>s.ans.map((a,i)=>a===KEY[i]?1:0),grp=l=>SUBS.map(x=>Math.round(l.reduce((t,s)=>{let c=0;for(let q=x[1];q<=x[2];q++)c+=s.ans[q-1]===KEY[q-1]?1:0;return t+c/(x[2]-x[1]+1)},0)/l.length*100));
+ const base=location.href.split("#")[0],al=grp(S),cache={};lk.innerHTML="";oj.style.display="none";
+ S.forEach(s=>{const g=by(s.level);if(!(s.level in cache))cache[s.level]=g.length>=3?grp(g):null;
+  const u=base+"#d="+pk({n:s.name,l:s.level,b:ok(s).join(""),al,lv:cache[s.level]}),sc=ok(s).reduce((a,b)=>a+b,0);
   const d=document.createElement("div");d.className="card";d.style.cssText="padding:12px;border-right:5px solid var("+LC[s.level]+")";
-  d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${s.name}</b><small>${s.level} · ${sc}/95</small></div><div class="row" style="margin:8px 0 0"><button class="on" style="flex:1">📋 نسخ الرابط</button><a class="btn" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent("تقرير نتيجتك في اختبار SBFD R1 2026:\n"+u)}">واتساب</a></div>`;
+  d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>${dr(s.name)}</b><small>${s.level} · ${sc}/95</small></div><div class="row" style="margin:8px 0 0"><button class="on" style="flex:1">📋 نسخ الرابط</button><a class="btn" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent("تقرير نتيجتك في Pre Assessment Exam:\n"+u)}">واتساب</a></div><small dir="ltr" style="display:block;margin-top:6px">${u.length} حرف</small>`;
   d.querySelector("button").onclick=function(){cp(u,this)};lk.appendChild(d)});
- msg.textContent="لكل طالب بطاقة برابطه — اضغط «نسخ الرابط»";lk.scrollIntoView({behavior:"smooth",block:"start"})}
-function boot(){const ms=location.hash.match(/^#s=(.+)$/);if(ms){try{rep(unb64(ms[1]))}catch(e){msg.textContent="رابط غير صالح"}return}
+ msg.textContent="لكل دكتور بطاقة برابطه — اضغط «نسخ الرابط»";lk.scrollIntoView({behavior:"smooth",block:"start"})}
+function boot(){const ms=location.hash.match(/^#d=(.+)$/);if(ms){try{rep(upk(ms[1]))}catch(e){msg.textContent="رابط غير صالح"}return}
  const m=location.hash.match(/^#r=(.+)$/);if(!m)return;
  try{const d=unb64(m[1]);KEY="1".repeat(95);S=d.map(x=>({name:x[0],level:x[1],ans:unhex(x[2])}));PUB=true;adm.style.display="none";document.querySelector(".hero .sub").textContent="نتائج الاختبار — عرض فقط";ready()}catch(e){msg.textContent="رابط غير صالح"}}
 boot();
